@@ -1,0 +1,26 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "node学习笔记",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdolphGithub/node.git"
+  },
+  "author": "1138027478@qq.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AdolphGithub/node/issues"
+  },
+  "homepage": "https://github.com/AdolphGithub/node#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "md5": "^2.2.1",
+    "sha1": "^1.1.1",
+    "utility": "^1.13.1"
+  }
+}
