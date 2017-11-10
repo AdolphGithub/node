@@ -17,10 +17,10 @@ app.get('/',(request,response,next)=>{
                 $('#topic .topic_title').map((index,element) => {
                     item.push({
                         'title':$(element).attr('title'),
-                        'href':$(element).attr('href'),
-                        'author':$
+                        'href':$(element).attr('href')
                     });
                 });
+                response.send(item);
             }
     });
 });
