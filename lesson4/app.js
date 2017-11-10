@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 const EventProxy = require('eventproxy');
 
 var app = express();
-var events = new EventProxy();
+var proxy = new EventProxy();
 
 app.get('/',(request,response,next)=>{
     var base_url = 'https://cnodejs.org';
@@ -19,34 +19,42 @@ app.get('/',(request,response,next)=>{
             $('#topic_list .topic_title').map((index,element)=>{
                 href.push(base_url+$(element).attr('href'));
             });
+            href = [href[0]];
             // 得到所有的第一个评论
-            events.after('topic_html',href.length,(topics)=>{
+            proxy.after('topic_html',href.length,(topics)=>{
                 topics = topics.map((topic)=>{
-                    var els = cheerio.io(topics[1]);
+                    var els = cheerio.load(topic[1]);
                     return {
                         'title':els('title').text(),
                         'url':topic[0],
-                        'comments':eles('.cell p').eq(0).text(),
-                        'user_url':base_url + eles('.cell .user_avatar').eq(0).attr('href')
+                        'comments':els('.cell p').eq(0).text(),
+                        'user_url':base_url + els('.cell .user_avatar').eq(0).attr('href')
                     };
                 });
                 topics.map((topic)=>{
                     superagent.get(topic.user_url).end((err,result)=>{
-                        topic.user_logo = html('.userinfo .dark').text();
-                        topic.user_score = html('.userinfo .big').text();
-                        events.emit('user_info',topic);
+                        var html = cheerio.load(result.text);
+                        topic.user_logo = html('.userinfo .user_avatar').attr('title');
+                        topic.user_score = html('.unstyled .big').text();
+                        proxy.emit('user_info',topic);
                     });
                 });
             });
 
             href.forEach((topicUrl)=>{
                 superagent.get(topicUrl).end((err,result)=>{
-                    events.emit('topic_html',[topicUrl,result.text]);
+                    if(err){
+                        next(err);
+                    }else{
+                        proxy.emit('topic_html',[topicUrl,result.text]);
+                    }
                 });
             });
+            
             // 注册事件.
-            events.after('user_info',href.length,(topics)=>{
+            proxy.after('user_info',href.length,(topics)=>{
                 response.send(topics);
+                // console.dir(topics);
             });
         }
     });
