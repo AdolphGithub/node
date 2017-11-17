@@ -34,8 +34,9 @@ app.get('/',(request,response,next)=>{
                 topics.map((topic)=>{
                     superagent.get(topic.user_url).end((err,result)=>{
                         var html = cheerio.load(result.text);
-                        topic.user_logo = html('.userinfo .user_avatar').attr('title');
+                        topic.user_name = html('.userinfo .user_avatar').attr('title');
                         topic.user_score = html('.unstyled .big').text();
+                        topic.user_logo = html('.');
                         proxy.emit('user_info',topic);
                     });
                 });
